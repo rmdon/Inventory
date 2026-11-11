@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{% block title %}ERP Production{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'production/css/app.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="{% url 'dashboard' %}"><span class="brand-mark">EP</span><span>ERP <b>Production</b></span></a>
+      <div class="nav-caption">MENU UTAMA</div>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <a class="nav-link {% if active_nav == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><span class="nav-icon">▦</span>Dashboard</a>
+        <a class="nav-link {% if active_nav == 'sales_orders' %}active{% endif %}" href="{% url 'sales_orders' %}"><span class="nav-icon">▤</span>Sales Order</a>
+        {% if user.is_staff or user.is_superuser %}<a class="nav-link {% if active_nav == 'imports' %}active{% endif %}" href="{% url 'import_data' %}"><span class="nav-icon">⇧</span>Data Import</a>{% endif %}
+      </nav>
+      <div class="sidebar-bottom"><span class="live-dot"></span>Data snapshot<br><small>{{ last_updated|default:"Belum ada impor" }}</small></div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="mobile-menu" type="button" aria-label="Buka navigasi" onclick="document.body.classList.toggle('nav-open')">☰</button>
+        <div class="topbar-title">{% block section_title %}Production Overview{% endblock %}</div>
+        <form class="global-search" method="get" action="{% url 'sales_orders' %}">
+          <span aria-hidden="true">⌕</span><input type="search" name="q" value="{{ request.GET.q }}" placeholder="Cari order, repeat, coil…" aria-label="Pencarian global">
+          <input type="hidden" name="tab" value="tracker">
+        </form>
+        <button class="icon-button" type="button" title="Notifikasi" aria-label="Notifikasi">♧</button>
+        <div class="user-menu"><span class="avatar">{{ user.username|default:"P"|slice:":1"|upper }}</span><span class="user-meta"><b>{{ user.username|default:"Planner" }}</b><small>{{ user_role|default:"Production team" }}</small></span></div>
+      </header>
+      <div class="page-content">{% block content %}{% endblock %}</div>
+    </main>
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
+
