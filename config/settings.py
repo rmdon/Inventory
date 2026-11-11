@@ -5,14 +5,29 @@ import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load local secrets from .env without overriding Railway/system environment variables.
+_local_env_file = BASE_DIR / ".env"
+if _local_env_file.is_file():
+    for _line in _local_env_file.read_text(encoding="utf-8").splitlines():
+        _line = _line.strip()
+        if not _line or _line.startswith("#"):
+            continue
+        if _line.startswith("export "):
+            _line = _line[7:].lstrip()
+        if "=" not in _line:
+            continue
+        _name, _value = _line.split("=", 1)
+        _name, _value = _name.strip(), _value.strip()
+        if len(_value) >= 2 and _value[0] == _value[-1] and _value[0] in "\\\"'":
+            _value = _value[1:-1]
+        if _name:
+            os.environ.setdefault(_name, _value)
 IS_RAILWAY = any(os.environ.get(key) for key in ("RAILWAY_ENVIRONMENT", "RAILWAY_ENVIRONMENT_NAME", "RAILWAY_PROJECT_ID", "RAILWAY_SERVICE_ID", "RAILWAY_PUBLIC_DOMAIN"))
 DEBUG = os.environ.get("DJANGO_DEBUG", "0" if IS_RAILWAY or os.environ.get("DATABASE_URL") else "1") == "1"
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
-    if DEBUG:
-        SECRET_KEY = "dev-only-change-this-secret-key"
-    else:
-        raise ImproperlyConfigured("Set DJANGO_SECRET_KEY in the deployment environment.")
+    raise ImproperlyConfigured("Set DJANGO_SECRET_KEY in .env or the deployment environment.")
 
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if host.strip()]
 PUBLIC_DOMAIN = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "").strip()
@@ -92,7 +107,3 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
-
-
-
-

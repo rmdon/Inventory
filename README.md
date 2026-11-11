@@ -5,14 +5,15 @@ Aplikasi web untuk analisis Sales Order dan pelacakan inventory Finish Good, Not
 ## Menjalankan secara lokal
 
 1. Buat dan aktifkan virtual environment Python.
-2. Pasang dependensi: `pip install -r requirements.txt`.
-3. Buat tabel: `python manage.py migrate`.
-4. Buat akun administrator: `python manage.py createsuperuser`.
-5. Jalankan aplikasi: `python manage.py runserver`.
-6. Buka `http://127.0.0.1:8000/` dan masuk melalui `/admin/login/`.
-7. Admin dapat mengimpor workbook `.xlsx` melalui menu Data Import.
+2. Pada clone baru, salin template: `Copy-Item .env.example .env`, lalu ganti `DJANGO_SECRET_KEY` dengan secret acak milik Anda. File `.env` lokal yang sudah ada tidak perlu ditimpa.
+3. Pasang dependensi: `pip install -r requirements.txt`.
+4. Buat tabel: `python manage.py migrate`.
+5. Buat akun administrator: `python manage.py createsuperuser`.
+6. Jalankan aplikasi: `python manage.py runserver`.
+7. Buka `http://127.0.0.1:8000/` dan masuk melalui `/admin/login/`.
+8. Admin dapat mengimpor workbook `.xlsx` melalui menu Data Import.
 
-Database lokal memakai SQLite. Data contoh dalam `Training Web.xlsx` adalah data sintetis.
+Database lokal memakai SQLite. Data contoh dalam `Training Web.xlsx` adalah data sintetis. File `.env` bersifat lokal dan diabaikan Git; gunakan Railway Variables untuk secret production.
 
 ## Deploy ke Railway
 
